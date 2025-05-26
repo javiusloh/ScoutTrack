@@ -9,7 +9,19 @@ import SwiftUI
 
 struct ReportingView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack{
+            Text("Reporting Ic")
+                .padding()
+                .fontWeight(.bold)
+                .font(.title)
+                .foregroundColor(Color(hex: 0x115488))
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
+            Color(hex: 0xbae4f2)
+                .ignoresSafeArea()
+        }
     }
 }
 
