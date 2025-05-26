@@ -10,7 +10,7 @@ import SwiftUI
 struct ReportingView: View {
     var body: some View {
         VStack{
-            Text("Reporting Ic")
+            Text("Reporting IC")
                 .padding()
                 .fontWeight(.bold)
                 .font(.title)
