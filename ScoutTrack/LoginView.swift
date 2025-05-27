@@ -10,6 +10,7 @@ import SwiftUI
 struct LoginView: View {
     @State var showSheetTeacher = false
     @State var showSheetReporting = false
+    @AppStorage("reportingCode") var reportingCode = ""
 
     var body: some View {
         VStack{
@@ -44,9 +45,8 @@ struct LoginView: View {
                     }
                 }
                 .sheet(isPresented: $showSheetTeacher) {
-                    Password()
-                        .presentationDetents([.height(200), .medium, .large])
-                        .presentationDragIndicator(.automatic)
+                    Password(reportingCode: $reportingCode)
+                        .presentationDetents([.height(200)])
                 }
                 Button{
                     showSheetReporting = true
@@ -63,8 +63,9 @@ struct LoginView: View {
                             .foregroundColor(Color(hex: 0x115488))
                     }
                 }
-                .fullScreenCover(isPresented: $showSheetReporting) {
-                    ReportingView()
+                .sheet(isPresented: $showSheetReporting) {
+                    ReportingPassword(reportingCode: $reportingCode)
+                        .presentationDetents([.height(200)])
                 }
             }
             .padding()

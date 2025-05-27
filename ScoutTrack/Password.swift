@@ -5,12 +5,11 @@ struct Password: View {
     @State private var showPassword: Bool = false
     @State private var isAuthenticated: Bool = false
     @State private var shakeOffset: CGFloat = 0
+    @Binding var reportingCode: String
 
     var body: some View {
         NavigationStack {
             VStack {
-                Spacer()
-
                 HStack {
                     Group {
                         if showPassword {
@@ -38,7 +37,7 @@ struct Password: View {
                 .padding()
 
                 Button {
-                    if password == "Scoutcca" {
+                    if password == "cca" {
                         isAuthenticated = true
                     } else {
                         withAnimation(Animation.linear(duration: 0.4)) {
@@ -64,14 +63,14 @@ struct Password: View {
             .background(Color(hex: 0xBAE4F2))
             .ignoresSafeArea()
             .fullScreenCover(isPresented: $isAuthenticated) {
-                TeacherMainView()
+                TeacherMainView(reportingCode: $reportingCode)
             }
         }
     }
 }
 
 #Preview {
-    Password()
+    Password(reportingCode: .constant("000"))
 }
 
 struct ShakeEffect: GeometryEffect {

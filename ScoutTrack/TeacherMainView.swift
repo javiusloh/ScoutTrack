@@ -8,19 +8,22 @@ import SwiftUI
 
 struct TeacherMainView: View {
     @State var showSheetLogin = false
-    
+    @Binding var reportingCode: String
+    @State private var codeGeneratedAt: Date? = nil
+    @State private var timer: Timer?
+
     var body: some View {
         NavigationStack {
             TabView {
                 TodayView()
-                    .background(Color.clear) // Ensure transparency
+                    .background(Color.clear)
                     .tabItem {
                         Image(systemName: "calendar.badge.checkmark")
                         Text("Today")
                     }
                 
                 SummaryView()
-                    .background(Color.clear) // Ensure transparency
+                    .background(Color.clear)
                     .tabItem {
                         Image(systemName: "chart.bar.xaxis")
                         Text("Summary")
@@ -29,24 +32,65 @@ struct TeacherMainView: View {
             .tint(Color(hex: 0x115488))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showSheetLogin = true
-                    } label: {
-                        Image(systemName: "house.fill")
-                            .padding()
-                            .foregroundColor(Color(hex: 0x115488))
-                    }
-                    .fullScreenCover(isPresented: $showSheetLogin) {
-                        LoginView()
+                    HStack {
+                        Text(reportingCode)
+                        
+                        // Generate Code Button
+                        Button {
+                            generateCode()
+                        } label: {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                                .foregroundColor(Color(hex: 0x115488))
+                        }
+
+                        // Home Button
+                        Button {
+                            showSheetLogin = true
+                        } label: {
+                            Image(systemName: "house.fill")
+                                .foregroundColor(Color(hex: 0x115488))
+                        }
+                        .fullScreenCover(isPresented: $showSheetLogin) {
+                            LoginView()
+                        }
                     }
                 }
+            }
+            .onAppear {
+                if reportingCode.isEmpty {
+                    generateCode()
+                }
+                startCodeExpirationTimer()
+            }
+        }
+    }
+
+    func generateCode() {
+        let code = String(format: "%04d", Int.random(in: 0...9999)) // 4-digit code
+        reportingCode = code
+        codeGeneratedAt = Date()
+        startCodeExpirationTimer()
+    }
+
+    func startCodeExpirationTimer() {
+        timer?.invalidate() // Invalidate any existing timer
+
+        guard let codeTime = codeGeneratedAt else { return }
+
+        let interval = 30.0 // 30 minutes in seconds
+        let expirationTime = codeTime.addingTimeInterval(interval)
+        let timeLeft = expirationTime.timeIntervalSinceNow
+
+        if timeLeft <= 0 {
+            reportingCode = "Expired"
+        } else {
+            timer = Timer.scheduledTimer(withTimeInterval: timeLeft, repeats: false) { _ in
+                reportingCode = "Expired"
             }
         }
     }
 }
 
-
-
 #Preview {
-    TeacherMainView()
+    TeacherMainView(reportingCode: .constant("000"))
 }
