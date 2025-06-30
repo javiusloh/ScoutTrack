@@ -77,7 +77,7 @@ struct TeacherMainView: View {
 
         guard let codeTime = codeGeneratedAt else { return }
 
-        let interval = 30.0 // 30 minutes in seconds
+        let interval = 1800.0 // 30 minutes in seconds
         let expirationTime = codeTime.addingTimeInterval(interval)
         let timeLeft = expirationTime.timeIntervalSinceNow
 
