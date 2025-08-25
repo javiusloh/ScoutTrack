@@ -11,8 +11,8 @@ struct TeacherMainView: View {
     @Binding var reportingCode: String
     @State private var codeGeneratedAt: Date? = nil
     @State private var timer: Timer?
-    let backgroundColor = UIColor(red: 0xba/255, green: 0xe4/255, blue: 0xf2/255, alpha: 1)
 
+    
     var body: some View {
         NavigationStack {
                 TodayView()

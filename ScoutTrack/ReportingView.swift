@@ -15,6 +15,61 @@ struct DailyAttendance: Identifiable, Codable, Hashable {
     var records: [AttendanceRecord]
 }
 
+struct ExaResponse: Codable {
+    let exa: [ExaMember]
+}
+
+struct ExaMember: Codable {
+    let name: String
+    let id: Int
+
+    enum CodingKeys: String, CodingKey {
+        case name = "exa"
+        case id
+    }
+}
+
+struct NanoResponse: Codable {
+    let nano: [NanoMember]
+}
+
+struct NanoMember: Codable {
+    let name: String
+    let id: Int
+
+    enum CodingKeys: String, CodingKey {
+        case name = "nano"
+        case id
+    }
+}
+
+struct TeraResponse: Codable {
+    let tera: [TeraMember]
+}
+
+struct TeraMember: Codable {
+    let name: String
+    let id: Int
+
+    enum CodingKeys: String, CodingKey {
+        case name = "tera"
+        case id
+    }
+}
+
+struct ZettaResponse: Codable {
+    let zetta: [ZettaMember]
+}
+struct ZettaMember: Codable {
+    let name: String
+    let id: Int
+
+    enum CodingKeys: String, CodingKey {
+        case name = "zetta"
+        case id
+    }
+}
+
 struct ReportingView: View {
     @Binding var reportingCode: String
     @State private var showSheetLoginReport = false
@@ -52,6 +107,7 @@ struct ReportingView: View {
                     attendanceSection("Nano", records: $nano)
                     attendanceSection("Tera", records: $tera)
                     attendanceSection("Zetta", records: $zetta)
+
                 }
                 .scrollContentBackground(.hidden)
                 .background(Color(hex: 0xbae4f2))
@@ -77,7 +133,11 @@ struct ReportingView: View {
             .background(Color(hex: 0xbae4f2).ignoresSafeArea())
             .navigationTitle("Today's Attendance")
             .onAppear {
-                setupInitialNames()
+                fetchExaMembers()
+                fetchNanoMembers()
+                fetchTeraMembers()
+                fetchZettaMembers()
+                setupInitialNames() // fallback for others
             }
         }
     }
@@ -103,34 +163,98 @@ struct ReportingView: View {
 
     func setupInitialNames() {
         if exa.isEmpty {
-            exa = ["Aiden Tan Qian Yu", "Asyraf Islam Ibrahim", "Chiu Yong Zhi, Caleb", "Emmanuel Martin",
-                   "Jayren Guo Jieren", "Leow En Jie Ezav", "Mu Jiuyu William",
-                   "Quek Wei Xian Gabriel", "Tim Mao Feng, Aidan", "Yio Ti Chi"]
+            exa = ["Updating..."]
                 .map { AttendanceRecord(name: $0, patrol: "Exa", status: "Present") }
         }
-
         if nano.isEmpty {
-            nano = ["Gracelyn Gosal", "Gregory Tay Kai Yuan", "Jarius Wong Kai Zhe", "Kaiser Low",
-                    "Kiren Keshaun Pillai", "Marcus Effendi Xu", "Morgan Doan Luu",
-                    "Moy Ze Jun, Zelig", "Ng Jing Kai Matteo", "Tan Hai Ruii", "Tung Hong Jiang"]
+            nano = ["Updating..."]
                 .map { AttendanceRecord(name: $0, patrol: "Nano", status: "Present") }
         }
 
         if tera.isEmpty {
-            tera = ["Andre Ryan Sung", "Austin Nilan Benedict", "Chee Yi Xiong", "Ho Zhan Beng, Nigel",
-                    "Javius Loh Jingwei", "Kaydan Renyi Mathenz", "Neo Yongyi",
-                    "Ong Cheng Feng", "Seow Ching Yang Keon", "Yeo Zi Qi"]
+            tera = ["Updating..."]
                 .map { AttendanceRecord(name: $0, patrol: "Tera", status: "Present") }
         }
 
         if zetta.isEmpty {
-            zetta = ["Ayden Seah", "Chew Sing Hun", "Chin Yit Gin", "Dylan Christopher Lee Shing",
-                     "Hariram Ravikumar", "Isaac Woon Xin Wei", "Keagan Scott Ng Ooi Tong",
-                     "Lee Yu Le", "Manoharan Aharan", "Ted Tan"]
+            zetta = ["Updating..."]
                 .map { AttendanceRecord(name: $0, patrol: "Zetta", status: "Present") }
         }
     }
 
+    func fetchExaMembers() {
+        guard let url = URL(string: "https://api.sheety.co/c6a76e579b1880d17b088366d51aa03b/sstFearlessFalconScoutAttendance/exa") else { return }
+
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else { return }
+
+            do {
+                let response = try JSONDecoder().decode(ExaResponse.self, from: data)
+                DispatchQueue.main.async {
+                    self.exa = response.exa.map {
+                        AttendanceRecord(name: $0.name, patrol: "Exa", status: "Present")
+                    }
+                }
+            } catch {
+                print("Decoding error:", error)
+            }
+        }.resume()
+    }
+    func fetchNanoMembers() {
+        guard let url = URL(string: "https://api.sheety.co/c6a76e579b1880d17b088366d51aa03b/sstFearlessFalconScoutAttendance/nano") else { return }
+
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else { return }
+
+            do {
+                let response = try JSONDecoder().decode(NanoResponse.self, from: data)
+                DispatchQueue.main.async {
+                    self.nano = response.nano.map {
+                        AttendanceRecord(name: $0.name, patrol: "Nano", status: "Present")
+                    }
+                }
+            } catch {
+                print("Decoding error:", error)
+            }
+        }.resume()
+    }
+    func fetchTeraMembers() {
+        guard let url = URL(string: "https://api.sheety.co/c6a76e579b1880d17b088366d51aa03b/sstFearlessFalconScoutAttendance/tera") else { return }
+
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else { return }
+
+            do {
+                let response = try JSONDecoder().decode(TeraResponse.self, from: data)
+                DispatchQueue.main.async {
+                    self.tera = response.tera.map {
+                        AttendanceRecord(name: $0.name, patrol: "Tera", status: "Present")
+                    }
+                }
+            } catch {
+                print("Decoding error:", error)
+            }
+        }.resume()
+    }
+    func fetchZettaMembers() {
+        guard let url = URL(string: "https://api.sheety.co/c6a76e579b1880d17b088366d51aa03b/sstFearlessFalconScoutAttendance/zetta") else { return }
+
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else { return }
+
+            do {
+                let response = try JSONDecoder().decode(ZettaResponse.self, from: data)
+                DispatchQueue.main.async {
+                    self.zetta = response.zetta.map {
+                        AttendanceRecord(name: $0.name, patrol: "Zetta", status: "Present")
+                    }
+                }
+            } catch {
+                print("Decoding error:", error)
+            }
+        }.resume()
+    }
+    
     func saveTodayAttendance() {
         let todayDate = formattedToday()
 

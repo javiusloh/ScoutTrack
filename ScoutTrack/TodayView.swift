@@ -49,7 +49,7 @@ struct AttendanceDetailView: View {
     
     var body: some View {
         List {
-            Section(header: Text("Records for \(dailyRecord.date)").foregroundColor(mainTextColor)) {
+            Section(header: Text("Attendance for \(dailyRecord.date)").foregroundColor(mainTextColor)) {
                 ForEach(dailyRecord.records) { record in
                     HStack {
                         Text(record.name)
