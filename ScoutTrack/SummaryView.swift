@@ -21,7 +21,8 @@ struct SummaryView: View {
         .background {
             Color(hex: 0xbae4f2)
                 .ignoresSafeArea()
-        }    }
+        }
+    }
 }
 
 #Preview {
