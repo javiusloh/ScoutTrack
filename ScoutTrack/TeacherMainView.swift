@@ -59,7 +59,6 @@ struct TeacherMainView: View {
         codeGeneratedAt = Date()
         startCodeExpirationTimer()
     }
-
     func startCodeExpirationTimer() {
         timer?.invalidate() // Invalidate any existing timer
 
